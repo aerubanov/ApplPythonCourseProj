@@ -1,21 +1,21 @@
-from app import app
+from aplication import app
 import time
 import os
 from sqlalchemy.orm import sessionmaker
-from models import engine, Image
+from aplication.models import engine, Image
 from flask import request, abort, jsonify, g
-from logger_config import LOGGING_CONFIG
+from aplication.logger_config import LOGGING_CONFIG
 import logging.config
-import validation
+import aplication.validation
 from marshmallow.exceptions import ValidationError
-from image_processing import ImageProcessor
+from aplication.image_processing import ImageProcessor
 
 PHOTO_DIR = 'images/'
 Session = sessionmaker(bind=engine)
 logger = logging.getLogger('RequestLogger')
 logging.config.dictConfig(LOGGING_CONFIG)
 logger.info('App running')
-schema = validation.ImageSchema()
+schema = aplication.validation.ImageSchema()
 app.config['UPLOAD_FOLDER'] = PHOTO_DIR
 
 
