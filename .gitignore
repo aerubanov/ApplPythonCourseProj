@@ -4,4 +4,7 @@ web/server/log
 web/server/images/
 web/bot/tokens.py
 web/bot/botlog
+env/
+web/server/nohup.out
+web/bot/nohup.out
 __pycache__

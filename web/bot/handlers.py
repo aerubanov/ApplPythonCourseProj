@@ -37,7 +37,6 @@ def photo(update, context):
         expr = s['expression']
         context.bot.send_message(chat_id=update.effective_chat.id, text=f"Вы ввели выражение: {expr}")
         text, img_urls = api_query(expr)
-        print(text, img_urls)
         context.bot.send_message(chat_id=update.effective_chat.id, text=f"Результат: \n {text}")
         for url in img_urls:
             context.bot.send_photo(chat_id=update.effective_chat.id, photo=url)

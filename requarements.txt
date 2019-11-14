@@ -5,3 +5,4 @@ sqlalchemy
 marshmallow
 wolframalpha
 gunicorn
+supervisor 
