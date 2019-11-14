@@ -1,12 +1,9 @@
 # TODO добавить логирование
 import requests
-from schema import ResponseSchema
 from wolfram_api import WolfQueryException, api_query
 from logger import logger
 from time import time
 import json
-
-schema = ResponseSchema()
 
 
 def error_message(update, context, message="Произошла ошибка. Попробуйте ещё раз."):
@@ -14,18 +11,26 @@ def error_message(update, context, message="Произошла ошибка. П�
 
 
 def start(update, context):
+    print('start')
+    logger.info('%s %s %s %s %s %s', 'START_HANDLER', update.update_id, update.message.message_id,
+               update.message.from_user.id, update.message.date, update.message.text)
+    print(update.update_id)
+    print(update.message)
+    print(update.message.message_id)
+    print(update.message.from_user.id)
+    print(update.message.date)
+    print(update.message.text)
     context.bot.send_message(chat_id=update.effective_chat.id, text='Привет! Я бот, который умет распознавать '
                                                                     'написанное от руки математического выражения '
                                                                     'и преобразовывать его в запрос к WolframAlpha.'
                                                                     ' Чтобы попробовать, пришлите мне'
                                                                     ' фотографию написанного выражения.')
-    logger.info('%s %s %s %s %s %s', 'START_HANDLER', update.update_id, update.message.massage_id,
-                update.message.from_user, update.message.date, update.message.text)
+    logger.info('start handler')
 
 
 def photo(update, context):
     start_time = time()
-
+    print('photo')
     file_info = context.bot.get_file(update.message.photo[-1].file_id)
     file = context.bot.download_file(file_info.file.path)
     r = requests.post('http://127.0.0.1:5000/photos',
@@ -43,7 +48,7 @@ def photo(update, context):
         context.bot.send_message(chat_id=update.effective_chat.id, text=f"Результат: \n {text}")
         for url in img_urls:
             context.bot.send_photo(chat_id=update.effective_chat.id, photo=url)
-        resp_time = (time.time() - g.start) * 1000
+        resp_time = (time() - g.start) * 1000
         logger.info('%s %s %s %s %s %s', 'PHOTO_HANDLER', update.update_id, update.message.massage_id,
                     update.message.from_user, update.message.date, expr, resp_time)
     except (json.JSONDecodeError, WolfQueryException) as e:

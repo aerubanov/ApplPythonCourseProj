@@ -13,7 +13,7 @@ class Bot:
 
     def __init__(self):
         print(TELEGRAM_TOKEN)
-        self.updater = Updater(token=TELEGRAM_TOKEN)
+        self.updater = Updater(TELEGRAM_TOKEN, use_context=True)
         self.dispatcher = self.updater.dispatcher
         self.dispatcher.add_handler(self.start_handler)
         self.dispatcher.add_handler(self.photo_handler)
