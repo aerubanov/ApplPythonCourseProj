@@ -23,19 +23,21 @@ def start(update, context):
 def photo(update, context):
     start_time = time()
     file_info = context.bot.get_file(update.message.photo[-1].file_id)
-    file = context.bot.download_file(file_info.file.path)
-    r = requests.post('http://127.0.0.1:5000/photos',
-                      files={"photo": file}, data={"image_id": str(update.message.message_id)})
+    file_url = file_info.file_path
+    resp = requests.get(file_url)
+    r = requests.post('http://127.0.0.1:8000/photos',
+                      files={"photo": resp.content}, data={"image_id": str(update.message.message_id)})
     if r.status_code != 200:
         error_message(update, context)
         logger.error('%s %s %s %s', 'PHOTO_HANDLER', update.update_id, "Incorrect server response", r.text)
         return
-    r = requests.get(f'http://127.0.0.1:5000/photos/{update.message.message_id}')
+    r = requests.get(f'http://127.0.0.1:8000/photos/{update.message.message_id}/')
     try:
-        s = json.load(r.text)
+        s = json.loads(r.text)
         expr = s['expression']
         context.bot.send_message(chat_id=update.effective_chat.id, text=f"Вы ввели выражение: {expr}")
         text, img_urls = api_query(expr)
+        print(text, img_urls)
         context.bot.send_message(chat_id=update.effective_chat.id, text=f"Результат: \n {text}")
         for url in img_urls:
             context.bot.send_photo(chat_id=update.effective_chat.id, photo=url)
