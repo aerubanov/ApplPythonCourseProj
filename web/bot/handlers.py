@@ -11,35 +11,26 @@ def error_message(update, context, message="Произошла ошибка. П�
 
 
 def start(update, context):
-    print('start')
     logger.info('%s %s %s %s %s %s', 'START_HANDLER', update.update_id, update.message.message_id,
-               update.message.from_user.id, update.message.date, update.message.text)
-    print(update.update_id)
-    print(update.message)
-    print(update.message.message_id)
-    print(update.message.from_user.id)
-    print(update.message.date)
-    print(update.message.text)
+                update.message.from_user, update.message.date, update.message.text)
     context.bot.send_message(chat_id=update.effective_chat.id, text='Привет! Я бот, который умет распознавать '
                                                                     'написанное от руки математического выражения '
                                                                     'и преобразовывать его в запрос к WolframAlpha.'
                                                                     ' Чтобы попробовать, пришлите мне'
                                                                     ' фотографию написанного выражения.')
-    logger.info('start handler')
 
 
 def photo(update, context):
     start_time = time()
-    print('photo')
     file_info = context.bot.get_file(update.message.photo[-1].file_id)
     file = context.bot.download_file(file_info.file.path)
     r = requests.post('http://127.0.0.1:5000/photos',
-                      files={"photo": file}, data={"image_id": str(update.message.massage_id)})
+                      files={"photo": file}, data={"image_id": str(update.message.message_id)})
     if r.status_code != 200:
         error_message(update, context)
         logger.error('%s %s %s %s', 'PHOTO_HANDLER', update.update_id, "Incorrect server response", r.text)
         return
-    r = requests.get(f'http://127.0.0.1:5000/photos/{update.message.massage_id}')
+    r = requests.get(f'http://127.0.0.1:5000/photos/{update.message.message_id}')
     try:
         s = json.load(r.text)
         expr = s['expression']
@@ -49,7 +40,7 @@ def photo(update, context):
         for url in img_urls:
             context.bot.send_photo(chat_id=update.effective_chat.id, photo=url)
         resp_time = (time() - g.start) * 1000
-        logger.info('%s %s %s %s %s %s', 'PHOTO_HANDLER', update.update_id, update.message.massage_id,
+        logger.info('%s %s %s %s %s %s', 'PHOTO_HANDLER', update.update_id, update.message.message_id,
                     update.message.from_user, update.message.date, expr, resp_time)
     except (json.JSONDecodeError, WolfQueryException) as e:
         error_message(update, context)
@@ -60,5 +51,6 @@ def unknown(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text="Извините, но я Вас не понимаю. Если вы хотите,"
                                                                     "чтобы я нашел значение рукописного выражения,"
                                                                     "просто пришлите мне его фото")
-    logger.info('%s %s %s %s %s %s', 'UNKNOWN_HANDLER', update.update_id, update.message.massage_id,
+    logger.info('%s %s %s %s %s %s', 'UNKNOWN_HANDLER', update.update_id, update.message.message_id,
                 update.message.from_user, update.message.date, update.message.text)
+
