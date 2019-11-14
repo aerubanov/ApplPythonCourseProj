@@ -1,1 +1,6 @@
 .idea/
+web/server/images.db
+web/server/log
+web/server/images/
+web/bot/tokens.py
+__pycache__
