@@ -43,7 +43,7 @@ def letters_extract(path_to_img: str, out_size=28):
         if hierarchy[0][idx][3] == _hier_num and size_max > 30:
             cv2.rectangle(img, (x, y), (x + w, y + h), (70, 0, 0), 1)
             letter_crop = ~img_erode_out[y : y + h, x : x + w]
-            letter_square = 255 * np.ones(shape=[size_max, size_max], dtype=np.uint8)
+            letter_square = 0 * np.ones(shape=[size_max, size_max], dtype=np.uint8)
             if w > h:
                 y_pos = size_max // 2 - h // 2
                 letter_square[y_pos : y_pos + h, 0:w] = letter_crop
