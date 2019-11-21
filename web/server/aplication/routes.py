@@ -14,6 +14,8 @@ from aplication.image_processing import ImageProcessor
 
 PHOTO_DIR = 'images/'
 OUTPUT_DIR = 'out_images/'
+SERVER_LOCATION = '/home/cloud/ApplPythonCourseProj/web/server'
+
 Session = sessionmaker(bind=engine)
 logger = logging.getLogger('RequestLogger')
 logging.config.dictConfig(LOGGING_CONFIG)
@@ -80,8 +82,8 @@ def get_segmentation(image_id):
     path = item.out_path
     if path is None:
         abort(404, "Image not found")
-    f = os.path.join('/home/cloud/ApplPythonCourseProj/web/server', path)
-    return send_file(f)
+    f = os.path.join(SERVER_LOCATION, path)
+    return jsonify({'photo': f})
 
 
 @app.before_request
