@@ -5,4 +5,5 @@ sqlalchemy
 marshmallow
 wolframalpha
 gunicorn
-supervisor 
+supervisor
+opencv-python-4.1.1.26

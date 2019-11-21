@@ -2,7 +2,7 @@ import time
 import os
 import logging.config
 from sqlalchemy.orm import sessionmaker
-from flask import request, abort, jsonify, g
+from flask import request, abort, jsonify, g, send_file
 from marshmallow.exceptions import ValidationError
 import requests
 
@@ -13,12 +13,14 @@ import aplication.validation
 from aplication.image_processing import ImageProcessor
 
 PHOTO_DIR = 'images/'
+OUTPUT_DIR = 'out_images/'
 Session = sessionmaker(bind=engine)
 logger = logging.getLogger('RequestLogger')
 logging.config.dictConfig(LOGGING_CONFIG)
 logger.info('App running')
 schema = aplication.validation.ImageSchema()
 app.config['UPLOAD_FOLDER'] = PHOTO_DIR
+app.config['OUT_FOLDER'] = OUTPUT_DIR
 
 
 def get_db():
@@ -35,12 +37,13 @@ def post_photo():
         image_id = s['image_id']
         img_url = s['img_url']
         path = os.path.join(app.config['UPLOAD_FOLDER'], str(image_id))
+        path = path + '.jpg'
         file = requests.get(img_url).content
         if file:
             with open(path, 'wb') as f:
                 f.write(file)
             session = get_db()
-            item = Image(id=image_id, path=path, result=None)
+            item = Image(id=image_id, path=path, result=None, out_path=None)
             session.add(item)
             session.commit()
             return 'OK'
@@ -55,12 +58,27 @@ def get_result(image_id):
     item = session.query(Image).get(image_id)
     if item is None:
         abort(404, "Unexciting image id")
-    image_processor = ImageProcessor(item.path)
+    out_path = os.path.join(app.config['OUT_FOLDER'], str(image_id))
+    out_path = out_path + '.jpg'
+    image_processor = ImageProcessor(item.path, out_path)
     result = image_processor.run()
     item.result = result
+    item.out_path = None
     session.add(item)
     session.commit()
     return jsonify({'expression': result})
+
+
+@app.route('/segmentation/<int:image_id>/', methods=['GET'])
+def get_segmentation(image_id):
+    session = get_db()
+    item = session.query(Image).get(image_id)
+    if item is None:
+        abort(404, "Unexciting image id")
+    path = item.out_path
+    if path is None:
+        abort(404, "Image not found")
+    return send_file(path)
 
 
 @app.before_request
