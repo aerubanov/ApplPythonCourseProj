@@ -37,7 +37,8 @@ def post_photo():
         path = os.path.join(app.config['UPLOAD_FOLDER'], str(image_id))
         file = requests.get(img_url).content
         if file:
-            file.save(path)
+            with open(path, 'wb') as f:
+                f.write(file)
             session = get_db()
             item = Image(id=image_id, path=path, result=None)
             session.add(item)
