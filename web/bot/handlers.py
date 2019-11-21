@@ -24,9 +24,9 @@ def photo(update, context):
     start_time = time()
     file_info = context.bot.get_file(update.message.photo[-1].file_id)
     file_url = file_info.file_path
-    resp = requests.get(file_url)
     r = requests.post('http://127.0.0.1:8000/photos',
-                      files={"photo": resp.content}, data={"image_id": str(update.message.message_id)})
+                      data={"image_id": str(update.message.message_id),
+                            "img_url": str(file_url)})
     if r.status_code != 200:
         error_message(update, context)
         logger.error('%s %s %s %s', 'PHOTO_HANDLER', update.update_id, "Incorrect server response", r.text)
@@ -54,4 +54,3 @@ def unknown(update, context):
                                                                     "просто пришлите мне его фото")
     logger.info('%s %s %s %s %s %s', 'UNKNOWN_HANDLER', update.update_id, update.message.message_id,
                 update.message.from_user, update.message.date, update.message.text)
-

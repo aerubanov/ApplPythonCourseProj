@@ -1,13 +1,15 @@
-from aplication import app
 import time
 import os
-from sqlalchemy.orm import sessionmaker
-from aplication.models import engine, Image
-from flask import request, abort, jsonify, g
-from aplication.logger_config import LOGGING_CONFIG
 import logging.config
-import aplication.validation
+from sqlalchemy.orm import sessionmaker
+from flask import request, abort, jsonify, g
 from marshmallow.exceptions import ValidationError
+import requests
+
+from aplication import app
+from aplication.models import engine, Image
+from aplication.logger_config import LOGGING_CONFIG
+import aplication.validation
 from aplication.image_processing import ImageProcessor
 
 PHOTO_DIR = 'images/'
@@ -31,8 +33,9 @@ def post_photo():
     try:
         s = schema.load(request.form)
         image_id = s['image_id']
+        img_url = s['img_url']
         path = os.path.join(app.config['UPLOAD_FOLDER'], str(image_id))
-        file = request.files['photo']
+        file = requests.get(img_url).content
         if file:
             file.save(path)
             session = get_db()
