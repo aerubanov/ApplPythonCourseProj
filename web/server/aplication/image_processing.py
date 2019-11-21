@@ -1,11 +1,15 @@
+from preprocessing import preprocessing
+
+
 class ImageProcessor:
 
-    def __init__(self, path):
+    def __init__(self, path, out_path):
         self.path = path
+        self.out_path = out_path
+        self.letters = None
 
     def preproc_image(self):
-        with open(self.path):
-            print(f"image preprocessed call for {self.path}")
+        self.letters = preprocessing.letters_extract(self.path, self.out_path)
 
     def classify_character(self):
         pass

@@ -10,6 +10,7 @@ class Image(Base):
 
     id = Column(Integer, primary_key=True)
     path = Column(String, unique=True)
+    out_path = Column(String, unique=True)
     result = Column(String)
 
 

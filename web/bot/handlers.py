@@ -35,6 +35,9 @@ def photo(update, context):
     try:
         s = json.loads(r.text)
         expr = s['expression']
+        segm_img = requests.get(f'http://127.0.0.1:8000//{update.message.message_id}/')
+        context.bot.send_message(chat_id=update.effective_chat.id, text=f"Распознанные символы: {expr}")
+        context.bot.send_photo(chat_id=update.effective_chat.id, photo=segm_img)
         context.bot.send_message(chat_id=update.effective_chat.id, text=f"Вы ввели выражение: {expr}")
         text, img_urls = api_query(expr)
         context.bot.send_message(chat_id=update.effective_chat.id, text=f"Результат: \n {text}")
