@@ -63,7 +63,9 @@ def get_result(image_id):
     image_processor = ImageProcessor(item.path, out_path)
     result = image_processor.run()
     item.result = result
-    item.out_path = None
+    logger.info('%s', out_path)
+    item.out_path = out_path
+
     session.add(item)
     session.commit()
     return jsonify({'expression': result})
@@ -78,7 +80,8 @@ def get_segmentation(image_id):
     path = item.out_path
     if path is None:
         abort(404, "Image not found")
-    return send_file(path)
+    f = os.path.join('/home/cloud/ApplPythonCourseProj/web/server', path)
+    return send_file(f)
 
 
 @app.before_request
