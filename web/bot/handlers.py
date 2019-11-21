@@ -1,4 +1,3 @@
-# TODO добавить логирование
 import requests
 from wolfram_api import WolfQueryException, api_query
 from logger import logger
@@ -36,8 +35,7 @@ def photo(update, context):
         s = json.loads(r.text)
         expr = s['expression']
         resp = requests.get(f'http://127.0.0.1:8000/segmentation/{update.message.message_id}/')
-        segm_img = json.load(resp.text)['photo']
-        print(segm_img, flush=True)
+        segm_img = json.loads(resp.text)['photo']
         context.bot.send_message(chat_id=update.effective_chat.id, text=f"Распознанные символы:")
         context.bot.send_photo(chat_id=update.effective_chat.id, photo=open(segm_img, 'rb'))
         context.bot.send_message(chat_id=update.effective_chat.id, text=f"Вы ввели выражение: {expr}")
