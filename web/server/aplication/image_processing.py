@@ -16,16 +16,9 @@ class ImageProcessor:
 
     def classify_character(self):
         imgs = [i[2] for i in self.letters]
-        # plt.figure(figsize=(10,10))
-        # for i in range(7):
-        #    plt.subplot(5,5,i+1)
-        #    plt.xticks([])
-        #    plt.yticks([])
-        #    plt.grid(False)
-        #    plt.imshow(imgs[i])
         n = len(imgs)
         imgs = np.concatenate(imgs)
-        imgs = imgs.reshape(n, 28, 28, 1)
+        imgs = np.ones((n, 28, 28, 1)) - imgs.reshape(n, 28, 28, 1) / 255
         prediction = model.predict(imgs)
         self.classes = np.argmax(prediction, axis=1)
 
@@ -38,8 +31,3 @@ class ImageProcessor:
         self.classify_character()
         result = self.pars_expression()
         return result
-
-
-if __name__ == '__main__':
-    p = ImageProcessor('photo.jpg', 'out.jpg')
-    print(p.run())
