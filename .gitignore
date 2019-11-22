@@ -7,4 +7,5 @@ web/bot/botlog
 env/
 web/server/nohup.out
 web/bot/nohup.out
+web/bot/tokens.py
 __pycache__
