@@ -43,7 +43,7 @@ def photo(update, context):
         context.bot.send_message(chat_id=update.effective_chat.id, text=f"Результат: \n {text}")
         for url in img_urls:
             context.bot.send_photo(chat_id=update.effective_chat.id, photo=url)
-        resp_time = (time() - g.start) * 1000
+        resp_time = (time() - start_time) * 1000
         logger.info('%s %s %s %s %s %s', 'PHOTO_HANDLER', update.update_id, update.message.message_id,
                     update.message.from_user, update.message.date, expr, resp_time)
     except (json.JSONDecodeError, WolfQueryException) as e:
