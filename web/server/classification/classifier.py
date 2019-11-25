@@ -1,11 +1,16 @@
 import pickle
 import os
 
-with open('/home/cloud/ApplPythonCourseProj/web/server/classification/model.obj', 'rb') as f:
+MODEL_PATH = '/home/cloud/ApplPythonCourseProj/web/server/classification/model.obj'
+CLASSES_PATH = '/home/cloud/ApplPythonCourseProj/web/server/classification/classes.txt'
+# MODEL_PATH = '/home/anatoly/HDD/Corses/ApplPythonCourseProj/web/server/classification/model.obj'
+# CLASSES_PATH = '/home/anatoly/HDD/Corses/ApplPythonCourseProj/web/server/classification/classes.txt'
+
+with open(MODEL_PATH, 'rb') as f:
     model = pickle.load(f)
 
 symbol_dict = {}
-with open('/home/cloud/ApplPythonCourseProj/web/server/classification/classes.txt', 'r') as f:
+with open(CLASSES_PATH, 'r') as f:
     i = 0
     for line in f:
         symbol_dict[i] = line.strip()

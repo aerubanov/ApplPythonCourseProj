@@ -2,6 +2,15 @@ from preprocessing import preprocessing
 from classification.classifier import model, symbol_dict
 import numpy as np
 
+digits = [i for i in range(8, 18)]
+let = [i for i in range(74, 100)]
+
+
+def is_upper_right(img1, img2):
+    # ось у вниз!
+    if img2[1][0] + img2[1][1] / 2 < img1[1][0]:
+        return True
+
 
 class ImageProcessor:
 
@@ -23,11 +32,36 @@ class ImageProcessor:
         self.classes = np.argmax(prediction, axis=1)
 
     def pars_expression(self):
-        smbls = [symbol_dict[i] for i in self.classes]
-        return ' '.join(smbls)
+        s = symbol_dict[self.classes[0]]
+        prev_letter = self.letters[0]
+        if self.classes[0] not in digits and self.classes[0] not in let:
+            s += ' '
+        for i in range(1,len(self.letters)):
+            cls = self.classes[i]
+            smbl = symbol_dict[cls]
+
+            # print(prev_letter[0], prev_letter[1])
+            # print(self.letters[i][0], self.letters[i][1])
+
+            if is_upper_right(prev_letter, self.letters[i]):
+                print(i)
+                s += '^'
+            if cls not in digits and cls not in let:
+                s += ' '
+                s += smbl
+                s += ' '
+            else:
+                s += smbl
+            prev_letter = self.letters[i]
+        return s
 
     def run(self):
         self.preproc_image()
         self.classify_character()
         result = self.pars_expression()
         return result
+
+
+if __name__ == '__main__':
+    p = ImageProcessor('photo.jpg', 'out.jpg')
+    print(p.run())
