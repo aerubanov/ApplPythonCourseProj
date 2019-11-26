@@ -12,10 +12,6 @@ def is_upper_right(img1, img2):
     # (0,0) верхний левый угол изображения
     # x, y - координаты верхнего левого угла
     if img1[1][0] + img1[1][1]/4 > img2[1][0] + img2[1][1]:
-        print(img1[0], img1[1])
-        print(img2[0], img2[1])
-        print(img1[1][0] + img1[1][1]/2 )
-        print(img2[1][0] + img2[1][1])
         return True
 
 
@@ -70,8 +66,3 @@ class ImageProcessor:
         self.classify_character()
         result = self.pars_expression()
         return result
-
-
-if __name__ == '__main__':
-    p = ImageProcessor('photo2.jpg', 'out.jpg')
-    print(p.run())
