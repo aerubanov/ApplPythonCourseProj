@@ -9,7 +9,13 @@ minus_equal = [5, 18]
 
 def is_upper_right(img1, img2):
     # ось у вниз!
-    if img2[1][0] + img2[1][1] / 2 < img1[1][0]:
+    # (0,0) верхний левый угол изображения
+    # x, y - координаты верхнего левого угла
+    if img1[1][0] + img1[1][1]/2 > img2[1][0] + img2[1][1]:
+        print(img1[0], img1[1])
+        print(img2[0], img2[1])
+        print(img1[1][0] + img1[1][1]/2 )
+        print(img2[1][0] + img2[1][1])
         return True
 
 
@@ -38,7 +44,7 @@ class ImageProcessor:
         prev_class = self.classes[0]
         if self.classes[0] not in digits and self.classes[0] not in let:
             s += ' '
-        for i in range(1,len(self.letters)):
+        for i in range(1, len(self.letters)):
             cls = self.classes[i]
             smbl = symbol_dict[cls]
             # знак равно иногда распознается как два минуса
