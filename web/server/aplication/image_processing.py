@@ -4,6 +4,7 @@ import numpy as np
 
 digits = [i for i in range(8, 18)]
 let = [i for i in range(74, 100)]
+minus_equal = [5, 18]
 
 
 def is_upper_right(img1, img2):
@@ -39,19 +40,21 @@ class ImageProcessor:
         for i in range(1,len(self.letters)):
             cls = self.classes[i]
             smbl = symbol_dict[cls]
-
-            # print(prev_letter[0], prev_letter[1])
-            # print(self.letters[i][0], self.letters[i][1])
-
-            if is_upper_right(prev_letter, self.letters[i]):
-                print(i)
-                s += '^'
-            if cls not in digits and cls not in let:
-                s += ' '
-                s += smbl
-                s += ' '
+            # знак равно иногда распознается как два минуса
+            if prev_letter in minus_equal and self.letters[i] in minus_equal:
+                s = s[:-1]
+                s += '='
             else:
-                s += smbl
+                # если выше и левее предыдущего, то добавляем '^'
+                if is_upper_right(prev_letter, self.letters[i]):
+                    print(i)
+                    s += '^'
+                if cls not in digits and cls not in let:
+                    s += ' '
+                    s += smbl
+                    s += ' '
+                else:
+                    s += smbl
             prev_letter = self.letters[i]
         return s
 
