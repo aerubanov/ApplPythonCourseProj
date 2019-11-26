@@ -35,19 +35,19 @@ class ImageProcessor:
     def pars_expression(self):
         s = symbol_dict[self.classes[0]]
         prev_letter = self.letters[0]
+        prev_class = self.classes[0]
         if self.classes[0] not in digits and self.classes[0] not in let:
             s += ' '
         for i in range(1,len(self.letters)):
             cls = self.classes[i]
             smbl = symbol_dict[cls]
             # знак равно иногда распознается как два минуса
-            if prev_letter in minus_equal and self.letters[i] in minus_equal:
-                s = s[:-1]
-                s += '='
+            if prev_class in minus_equal and self.classes[i] in minus_equal:
+                s = s[:-3]
+                s += ' = '
             else:
                 # если выше и левее предыдущего, то добавляем '^'
                 if is_upper_right(prev_letter, self.letters[i]):
-                    print(i)
                     s += '^'
                 if cls not in digits and cls not in let:
                     s += ' '
@@ -56,6 +56,7 @@ class ImageProcessor:
                 else:
                     s += smbl
             prev_letter = self.letters[i]
+            prev_class = self.classes[i]
         return s
 
     def run(self):
@@ -66,5 +67,5 @@ class ImageProcessor:
 
 
 if __name__ == '__main__':
-    p = ImageProcessor('photo.jpg', 'out.jpg')
+    p = ImageProcessor('photo2.jpg', 'out.jpg')
     print(p.run())
