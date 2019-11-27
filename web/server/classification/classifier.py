@@ -1,7 +1,6 @@
 import pickle
-import os
 
-MODEL_PATH = '/home/cloud/ApplPythonCourseProj/web/server/classification/model.obj'
+MODEL_PATH = '/home/cloud/ApplPythonCourseProj/web/server/classification/model34.obj'
 CLASSES_PATH = '/home/cloud/ApplPythonCourseProj/web/server/classification/classes.txt'
 # MODEL_PATH = '/home/anatoly/HDD/Corses/ApplPythonCourseProj/web/server/classification/model.obj'
 # CLASSES_PATH = '/home/anatoly/HDD/Corses/ApplPythonCourseProj/web/server/classification/classes.txt'
