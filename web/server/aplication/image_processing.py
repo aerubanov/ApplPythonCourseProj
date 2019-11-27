@@ -17,20 +17,21 @@ def is_upper_right(img1, img2):
 
 class ImageProcessor:
 
-    def __init__(self, path, out_path):
+    def __init__(self, path, out_path, size=34):
         self.path = path
         self.out_path = out_path
         self.letters = None
         self.classes = None
+        self.size = size
 
     def preproc_image(self):
-        self.letters, _ = preprocessing.letters_extract(self.path, self.out_path)
+        self.letters, _ = preprocessing.letters_extract(self.path, self.out_path, out_size=self.size)
 
     def classify_character(self):
         imgs = [i[2] for i in self.letters]
         n = len(imgs)
         imgs = np.concatenate(imgs)
-        imgs = np.ones((n, 28, 28, 1)) - imgs.reshape(n, 28, 28, 1) / 255
+        imgs = np.ones((n, self.size, self.size, 1)) - imgs.reshape(n, self.size, self.size, 1) / 255
         prediction = model.predict(imgs)
         self.classes = np.argmax(prediction, axis=1)
 
