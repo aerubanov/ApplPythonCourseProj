@@ -1,5 +1,5 @@
 from tokens import TELEGRAM_TOKEN
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram.ext import Updater, CommandHandler, MessageHandler, RegexHandler, Filters
 import handlers
 from logger import logger
 
@@ -10,6 +10,8 @@ class Bot:
     start_handler = CommandHandler('start', handlers.start, pass_user_data=True)
     photo_handler = MessageHandler(Filters.photo, handlers.photo, pass_user_data=True)
     unknown_handler = MessageHandler(Filters.command, handlers.unknown, pass_user_data=True)
+    wolfram_handler = RegexHandler('^(Продолжить)$', handlers.wolfram_request)
+    wolfram_handler = RegexHandler('^(Вернуться назад)$', handlers.retry)
 
     def __init__(self):
         print(TELEGRAM_TOKEN)

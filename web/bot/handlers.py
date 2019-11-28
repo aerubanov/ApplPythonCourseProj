@@ -3,6 +3,11 @@ from wolfram_api import WolfQueryException, api_query
 from logger import logger
 from time import time
 import json
+from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
+
+keyboard = [['Вернуться назад'], ['Продолжить']]
+reply_markup = ReplyKeyboardMarkup(keyboard)
+remove_reply_markup = ReplyKeyboardRemove()
 
 
 def error_message(update, context, message="Произошла ошибка. Попробуйте ещё раз."):
@@ -38,17 +43,47 @@ def photo(update, context):
         segm_img = json.loads(resp.text)['photo']
         context.bot.send_message(chat_id=update.effective_chat.id, text=f"Распознанные символы:")
         context.bot.send_photo(chat_id=update.effective_chat.id, photo=open(segm_img, 'rb'))
-        context.bot.send_message(chat_id=update.effective_chat.id, text=f"Вы ввели выражение: {expr}")
-        text, img_urls = api_query(expr)
-        context.bot.send_message(chat_id=update.effective_chat.id, text=f"Результат: \n {text}")
-        for url in img_urls:
-            context.bot.send_photo(chat_id=update.effective_chat.id, photo=url)
+        context.bot.send_message(chat_id=update.effective_chat.id, text=f"Вы ввели выражение: {expr}",
+                                 reply_markup=reply_markup)
+        context.user_data['expr'] = expr
         resp_time = (time() - start_time) * 1000
         logger.info('%s %s %s %s %s %s', 'PHOTO_HANDLER', update.update_id, update.message.message_id,
                     update.message.from_user, update.message.date, expr, resp_time)
-    except (json.JSONDecodeError, WolfQueryException) as e:
+    except json.JSONDecodeError as e:
         error_message(update, context)
         logger.error('%s %s %s %s', 'PHOTO_HANDLER', update.update_id, "Incorrect wolfram response", str(e))
+
+
+def wolfram_request(update, context):
+    start_time = time()
+    if not context.user_data['expr']:
+        error_message(update, context, message="Сначала пришлите фото выражения")
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 reply_markup=remove_reply_markup)
+        return
+    expr = context.user_data['expr']
+    try:
+        text, img_urls = api_query(expr)
+        context.bot.send_message(chat_id=update.effective_chat.id, text=f"Результат: \n {text}",
+                                 reply_markup=remove_reply_markup)
+        for url in img_urls:
+            context.bot.send_photo(chat_id=update.effective_chat.id, photo=url)
+        resp_time = (time() - start_time) * 1000
+        logger.info('%s %s %s %s %s %s', 'WOLFRAM_HANDLER', update.update_id, update.message.message_id,
+                    update.message.from_user, update.message.date, expr, resp_time)
+    except WolfQueryException as e:
+        error_message(update, context)
+        logger.error('%s %s %s %s', 'PHOTO_HANDLER', update.update_id, "Incorrect wolfram response", str(e))
+
+
+def retry(update, context):
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Хорошо, давайте попробуем ещё раз. Попробуйте"
+                                                                    "написать неверно распознанные символы так "
+                                                                    "чтобы их было сложнее перепутать и отправьте мне "
+                                                                    "новое фото.",
+                             reply_markup=remove_reply_markup)
+    logger.info('%s %s %s %s %s %s', 'RETRY_HANDLER', update.update_id, update.message.message_id,
+                update.message.from_user, update.message.date, update.message.text)
 
 
 def unknown(update, context):
