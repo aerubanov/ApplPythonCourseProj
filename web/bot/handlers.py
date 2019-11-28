@@ -17,10 +17,10 @@ def error_message(update, context, message="Произошла ошибка. П�
 def start(update, context):
     logger.info('%s %s %s %s %s %s', 'START_HANDLER', update.update_id, update.message.message_id,
                 update.message.from_user, update.message.date, update.message.text)
-    context.bot.send_message(chat_id=update.effective_chat.id, text='Привет! Я бот, который умет распознавать '
+    context.bot.send_message(chat_id=update.effective_chat.id, text=f'Привет {update.message.from_user.first_name}! Я бот, который умет распознавать '
                                                                     'написанное от руки математического выражения '
                                                                     'и преобразовывать его в запрос к WolframAlpha.'
-                                                                    ' Чтобы попробовать, пришлите мне'
+                                                                    ' Чтобы попробовать, пришли мне'
                                                                     ' фотографию написанного выражения.')
 
 
@@ -77,9 +77,9 @@ def wolfram_request(update, context):
 
 
 def retry(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Хорошо, давайте попробуем ещё раз. Попробуйте "
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Хорошо, давай попробуем ещё раз. Попробуй "
                                                                     "написать неверно распознанные символы так "
-                                                                    "чтобы их было проще распознать и отправьте мне "
+                                                                    "чтобы их было проще распознать и отправь мне "
                                                                     "новое фото.",
                              reply_markup=remove_reply_markup)
     logger.info('%s %s %s %s %s %s', 'RETRY_HANDLER', update.update_id, update.message.message_id,
