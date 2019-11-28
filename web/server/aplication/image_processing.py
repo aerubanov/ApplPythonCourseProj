@@ -14,6 +14,26 @@ def is_upper_right(img1, img2):
     if img1[1][0] + img1[1][1]/4 > img2[1][0] + img2[1][1]:
         if img1[0][0] + img2[0][1] < img2[0][0]:
             return True
+    return False
+
+
+def is_inside(outer_img, inner_img):
+    # проверяем Х
+    # if img2[0][0] > img1[0][0] and img2[0][0] + img2[0][1] < img1[0][0] + img1[0][1]:
+        # проверяем У
+    #    if img2[1][0] > img1[1][0] and img2[1][0] + img2[1][1] < img1[1][0] + img1[1][1]:
+    #        return True
+    # return False
+    inn_x = inner_img[0][0]
+    inn_y = inner_img[1][0]
+    inn_w = inner_img[0][1]
+    inn_h = inner_img[1][1]
+    out_x = outer_img[0][0]
+    out_y = outer_img[1][0]
+    out_w = outer_img[0][1]
+    out_h = outer_img[1][1]
+    return (out_x <= inn_x <= inn_x + inn_w <= out_x + out_w) and (out_y <= inn_y <= inn_y + inn_h <= out_y + out_h)
+
 
 
 class ImageProcessor:
@@ -27,6 +47,12 @@ class ImageProcessor:
 
     def preproc_image(self):
         self.letters, _ = preprocessing.letters_extract(self.path, self.out_path, out_size=self.size)
+        for i in range(len(self.letters)):
+            for j in range(i+1, len(self.letters)):
+                if is_inside(self.letters[i], self.letters[j]):
+                    cutted = preprocessing.cut_symbol(self.letters[i], self.letters[j])
+                    self.letters[i] = cutted
+
 
     def classify_character(self):
         imgs = [i[2] for i in self.letters]
@@ -68,3 +94,8 @@ class ImageProcessor:
         self.classify_character()
         result = self.pars_expression()
         return result
+
+
+if __name__ == '__main__':
+    p = ImageProcessor('photo6.jpg', 'out.jpg')
+    print(p.run())

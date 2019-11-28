@@ -70,3 +70,61 @@ def letters_extract(path_to_img: str, output_path: str, out_size=28):
 
     cv2.imwrite(output_path, img)
     return letters, img
+
+
+def cut_symbol(outer_img, inner_img):
+    """
+    :param outer_img: list[tuple(coordinate_x: int, width: int),
+                            tuple(coordinate_y: int, height: int),
+                            img: numpy.ndarray]
+    :param inner_img: list[tuple(coordinate_x: int, width: int),
+                            tuple(coordinate_y: int, height: int),
+                            img: numpy.ndarray]
+    :return: list[tuple(coordinate_x: int, width: int),
+                            tuple(coordinate_y: int, height: int),
+                            img: numpy.ndarray] (if the image is processed)
+            or
+
+            None (in other situation)
+    """
+    inn_x = inner_img[0][0]
+    inn_y = inner_img[1][0]
+    inn_w = inner_img[0][1]
+    inn_h = inner_img[1][1]
+    out_x = outer_img[0][0]
+    out_y = outer_img[1][0]
+    out_w = outer_img[0][1]
+    out_h = outer_img[1][1]
+    if outer_img[2].shape != inner_img[2].shape:
+        print("Изображения имеют разную размерность")
+        return
+
+    size_input_img = outer_img[2].shape[0]
+    # Определяем какой параметр при приведении изображения к виду, например,
+    # 28х28 (size_input_img) остался без изменения
+    reference_size = max(out_w, out_h)
+
+    conversion_factor = size_input_img / reference_size
+
+    # Определим начало координат
+    x_0_conv = conversion_factor * out_x + 1
+    y_0_conv = conversion_factor * out_y + 1
+
+    # Определим координаты символа, который вырезаем, в координатах изображения, из которого вырезаем
+    if out_w > out_h:
+        x_conv = m.ceil(conversion_factor * inn_x - x_0_conv)
+        y_conv = m.ceil(conversion_factor * inn_y - y_0_conv + (size_input_img - conversion_factor * out_h) / 2)
+    else:
+        x_conv = m.ceil(conversion_factor * inn_x - x_0_conv + (size_input_img - conversion_factor * out_w) / 2)
+        y_conv = m.ceil(conversion_factor * inn_y - y_0_conv)
+
+    # Прибавляю 1, чтобы точно убрать артефакты, которые могут возникнуть при удалении изображения.
+    # (Вероятно, не лучшее решение)
+    x_fin_conv = m.ceil(x_conv + inn_w * conversion_factor) + 1
+    y_fin_conv = m.ceil(y_conv + inn_h * conversion_factor) + 1
+
+    processed_outer_img = outer_img[2]
+    # Закрашиваем область, в которой находится символ, который надо вырезать
+    processed_outer_img[y_conv:y_fin_conv, x_conv:x_fin_conv] *= 0
+
+    return [outer_img[0], outer_img[1], processed_outer_img]
