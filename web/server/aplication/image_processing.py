@@ -12,7 +12,8 @@ def is_upper_right(img1, img2):
     # (0,0) верхний левый угол изображения
     # x, y - координаты верхнего левого угла
     if img1[1][0] + img1[1][1]/4 > img2[1][0] + img2[1][1]:
-        return True
+        if img1[0][0] + img2[0][1] < img2[0][0]:
+            return True
 
 
 class ImageProcessor:
