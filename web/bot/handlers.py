@@ -47,8 +47,8 @@ def photo(update, context):
                                  reply_markup=reply_markup)
         context.user_data['expr'] = expr
         resp_time = (time() - start_time) * 1000
-        logger.info('%s %s %s %s %s %s', 'PHOTO_HANDLER', update.update_id, update.message.message_id,
-                    update.message.from_user, update.message.date, expr, resp_time)
+        logger.info('%s %s %s %s %s %s %s', 'PHOTO_HANDLER', update.update_id, update.message.message_id,
+                    update.message.from_user, update.message.date, expr, str(resp_time))
     except json.JSONDecodeError as e:
         error_message(update, context)
         logger.error('%s %s %s %s', 'PHOTO_HANDLER', update.update_id, "Incorrect wolfram response", str(e))
@@ -69,17 +69,17 @@ def wolfram_request(update, context):
         for url in img_urls:
             context.bot.send_photo(chat_id=update.effective_chat.id, photo=url)
         resp_time = (time() - start_time) * 1000
-        logger.info('%s %s %s %s %s %s', 'WOLFRAM_HANDLER', update.update_id, update.message.message_id,
-                    update.message.from_user, update.message.date, expr, resp_time)
+        logger.info('%s %s %s %s %s %s %s', 'WOLFRAM_HANDLER', update.update_id, update.message.message_id,
+                    update.message.from_user, update.message.date, expr, str(resp_time))
     except WolfQueryException as e:
         error_message(update, context)
-        logger.error('%s %s %s %s', 'PHOTO_HANDLER', update.update_id, "Incorrect wolfram response", str(e))
+        logger.error('%s %s %s %s', 'WOLFRAM_HANDLER', update.update_id, "Incorrect wolfram response", str(e))
 
 
 def retry(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Хорошо, давайте попробуем ещё раз. Попробуйте"
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Хорошо, давайте попробуем ещё раз. Попробуйте "
                                                                     "написать неверно распознанные символы так "
-                                                                    "чтобы их было сложнее перепутать и отправьте мне "
+                                                                    "чтобы их было проще распознать и отправьте мне "
                                                                     "новое фото.",
                              reply_markup=remove_reply_markup)
     logger.info('%s %s %s %s %s %s', 'RETRY_HANDLER', update.update_id, update.message.message_id,
