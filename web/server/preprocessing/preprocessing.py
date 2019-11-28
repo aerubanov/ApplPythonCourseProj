@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import collections
+import math as m
 
 
 def letters_extract(path_to_img: str, output_path: str, out_size=28):
