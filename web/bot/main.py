@@ -5,13 +5,14 @@ from logger import logger
 
 
 class Bot:
-
     # handlers
-    start_handler = CommandHandler('start', handlers.start, pass_user_data=True)
-    photo_handler = MessageHandler(Filters.photo, handlers.photo, pass_user_data=True)
-    unknown_handler = MessageHandler(Filters.command, handlers.unknown, pass_user_data=True)
+    start_handler = CommandHandler('start', handlers.start)
+    photo_handler = MessageHandler(Filters.photo, handlers.photo)
+    unknown_handler = MessageHandler(Filters.command, handlers.unknown)
     wolfram_handler = MessageHandler(Filters.regex('^(Продолжить)$'), handlers.wolfram_request)
     retry_handler = MessageHandler(Filters.regex('^(Вернуться назад)$'), handlers.retry)
+    correction_handler = MessageHandler(Filters.regex('^(Предложить исправление)$'), handlers.correction)
+    correct_label_handler = MessageHandler(Filters.regex('^(/[0-9]+/\s\w+)$'), handlers.correct_labels)
 
     def __init__(self):
         print(TELEGRAM_TOKEN)
@@ -22,6 +23,8 @@ class Bot:
         self.dispatcher.add_handler(self.unknown_handler)
         self.dispatcher.add_handler(self.wolfram_handler)
         self.dispatcher.add_handler(self.retry_handler)
+        self.dispatcher.add_handler(self.correction_handler)
+        self.dispatcher.add_handler(self.correct_label_handler)
 
     def start(self):
         self.updater.start_polling()

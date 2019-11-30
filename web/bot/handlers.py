@@ -4,10 +4,15 @@ from logger import logger
 from time import time
 import json
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
+import csv
 
-keyboard = [['Вернуться назад'], ['Продолжить']]
+keyboard = [[['Вернуться назад'], ['Продолжить']],
+            ['Предложить исправление']]
 reply_markup = ReplyKeyboardMarkup(keyboard)
 remove_reply_markup = ReplyKeyboardRemove()
+fieldnames = ['user_id', 'image_id', 'symbol_num', 'correct_symbol']
+f = open('correct_classes.csv', 'w')
+writer = csv.DictWriter(f, fieldnames=fieldnames)
 
 
 def error_message(update, context, message="Произошла ошибка. Попробуйте ещё раз."):
@@ -17,7 +22,8 @@ def error_message(update, context, message="Произошла ошибка. П�
 def start(update, context):
     logger.info('%s %s %s %s %s %s', 'START_HANDLER', update.update_id, update.message.message_id,
                 update.message.from_user, update.message.date, update.message.text)
-    context.bot.send_message(chat_id=update.effective_chat.id, text=f'Привет {update.message.from_user.first_name}! Я бот, который умет распознавать '
+    context.bot.send_message(chat_id=update.effective_chat.id, text=f'Привет {update.message.from_user.first_name}! '
+                                                                    f'Я бот, который умет распознавать '
                                                                     'написанное от руки математического выражения '
                                                                     'и преобразовывать его в запрос к WolframAlpha.'
                                                                     ' Чтобы попробовать, пришли мне'
@@ -46,6 +52,7 @@ def photo(update, context):
         context.bot.send_message(chat_id=update.effective_chat.id, text=f"Вы ввели выражение: {expr}",
                                  reply_markup=reply_markup)
         context.user_data['expr'] = expr
+        context.user_data['image_id'] = update.message.message_id
         resp_time = (time() - start_time) * 1000
         logger.info('%s %s %s %s %s %s %s', 'PHOTO_HANDLER', update.update_id, update.message.message_id,
                     update.message.from_user, update.message.date, expr, str(resp_time))
@@ -91,4 +98,24 @@ def unknown(update, context):
                                                                     "чтобы я нашел значение рукописного выражения,"
                                                                     "просто пришлите мне его фото")
     logger.info('%s %s %s %s %s %s', 'UNKNOWN_HANDLER', update.update_id, update.message.message_id,
+                update.message.from_user, update.message.date, update.message.text)
+
+
+def correction(update, context):
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Пришли мне номер символа в строке начиная с "
+                                                                    "нуля и правильный символ через пробел, тогда я"
+                                                                    "смогу научиться лучше распозновать символы. "
+                                                                    "Можешь сделать так несколько раз.",
+                             reply_markup=remove_reply_markup)
+    logger.info('%s %s %s %s %s %s', 'RETRY_HANDLER', update.update_id, update.message.message_id,
+                update.message.from_user, update.message.date, update.message.text)
+
+
+def correct_labels(update, context):
+    image_id = context.user_data['image_id']
+    text = update.massage.text.split()
+    d = {'user_id': update.message.from_user.id, 'image_id': image_id, 'symbol_num': text[0], 'correct_symbol': text[1]}
+    writer.writerow(d)
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Спасибо, символ принят!")
+    logger.info('%s %s %s %s %s %s', 'CORRECT_SYMBOL', update.update_id, update.message.message_id,
                 update.message.from_user, update.message.date, update.message.text)
