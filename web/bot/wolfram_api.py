@@ -1,6 +1,6 @@
 import wolframalpha
 from tokens import WOLFRAM_API_TOKEN
-import pickle
+# import pickle
 
 client = wolframalpha.Client(WOLFRAM_API_TOKEN)
 
@@ -18,5 +18,9 @@ def api_query(query_string):
     if res['@success'] == 'false':
         raise WolfQueryException(f'Wolfram response @success == false on query {query_string}')
     text = '\n'.join(['%s:: %s' % (key, value) for (key, value) in res.details.items()])
-    img_urls = [item['img']['@src'] for item in res['pod'][1]['subpod']]
+    try:
+        img_urls = [item['img']['@src'] for item in res['pod'][1]['subpod']]
+    except TypeError:
+        item = res['pod'][1]['subpod']
+        img_urls = [item['img']['@src']]
     return text, img_urls
