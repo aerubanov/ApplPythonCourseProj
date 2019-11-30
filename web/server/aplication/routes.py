@@ -1,19 +1,19 @@
 import time
 import os
 import logging.config
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from flask import request, abort, jsonify, g, send_file
 from marshmallow.exceptions import ValidationError
 import requests
 
 from aplication import app
-from aplication.models import engine, Image
+from aplication.models import engine, Image, Base
 from aplication.logger_config import LOGGING_CONFIG
 import aplication.validation
 from aplication.image_processing import ImageProcessor
 
-PHOTO_DIR = 'images/'
-OUTPUT_DIR = 'out_images/'
+
 SERVER_LOCATION = '/home/cloud/ApplPythonCourseProj/web/server'
 
 Session = sessionmaker(bind=engine)
@@ -21,13 +21,19 @@ logger = logging.getLogger('RequestLogger')
 logging.config.dictConfig(LOGGING_CONFIG)
 logger.info('App running')
 schema = aplication.validation.ImageSchema()
-app.config['UPLOAD_FOLDER'] = PHOTO_DIR
-app.config['OUT_FOLDER'] = OUTPUT_DIR
+
+
+def create_db():
+    engine = create_engine(app.config['DATABASE'])
+    Base.metadata.create_all(engine)
+    Session = sessionmaker(bind=engine)
+    return Session()
 
 
 def get_db():
     if 'db' not in g:
-        g.db = Session()
+        session = create_db()
+        g.db = session
 
     return g.db
 
