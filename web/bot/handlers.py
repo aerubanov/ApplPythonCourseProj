@@ -6,13 +6,11 @@ import json
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
 import csv
 
-keyboard = [[['Вернуться назад'], ['Продолжить']],
+keyboard = [['Вернуться назад', 'Продолжить'],
             ['Предложить исправление']]
 reply_markup = ReplyKeyboardMarkup(keyboard)
 remove_reply_markup = ReplyKeyboardRemove()
 fieldnames = ['user_id', 'image_id', 'symbol_num', 'correct_symbol']
-f = open('correct_classes.csv', 'w')
-writer = csv.DictWriter(f, fieldnames=fieldnames)
 
 
 def error_message(update, context, message="Произошла ошибка. Попробуйте ещё раз."):
@@ -107,15 +105,18 @@ def correction(update, context):
                                                                     "смогу научиться лучше распозновать символы. "
                                                                     "Можешь сделать так несколько раз.",
                              reply_markup=remove_reply_markup)
-    logger.info('%s %s %s %s %s %s', 'RETRY_HANDLER', update.update_id, update.message.message_id,
+    logger.info('%s %s %s %s %s %s', 'CORRECTION_HANDLER', update.update_id, update.message.message_id,
                 update.message.from_user, update.message.date, update.message.text)
 
 
 def correct_labels(update, context):
     image_id = context.user_data['image_id']
-    text = update.massage.text.split()
+    text = update.message.text.split()
     d = {'user_id': update.message.from_user.id, 'image_id': image_id, 'symbol_num': text[0], 'correct_symbol': text[1]}
-    writer.writerow(d)
+    with open('correct_classes.csv', 'a') as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writerow(d)
     context.bot.send_message(chat_id=update.effective_chat.id, text="Спасибо, символ принят!")
     logger.info('%s %s %s %s %s %s', 'CORRECT_SYMBOL', update.update_id, update.message.message_id,
                 update.message.from_user, update.message.date, update.message.text)
+

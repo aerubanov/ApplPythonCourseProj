@@ -12,7 +12,7 @@ class Bot:
     wolfram_handler = MessageHandler(Filters.regex('^(Продолжить)$'), handlers.wolfram_request)
     retry_handler = MessageHandler(Filters.regex('^(Вернуться назад)$'), handlers.retry)
     correction_handler = MessageHandler(Filters.regex('^(Предложить исправление)$'), handlers.correction)
-    correct_label_handler = MessageHandler(Filters.regex('^(/[0-9]+/\s\w+)$'), handlers.correct_labels)
+    correct_label_handler = MessageHandler(Filters.regex('^([0-9]+\s.*)$'), handlers.correct_labels)
 
     def __init__(self):
         print(TELEGRAM_TOKEN)
