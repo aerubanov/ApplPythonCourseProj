@@ -60,7 +60,8 @@ class ImageProcessor:
         imgs = np.concatenate(imgs)
         imgs = np.ones((n, self.size, self.size, 1)) - imgs.reshape(n, self.size, self.size, 1) / 255
         prediction = model.predict(imgs)
-        self.classes = np.argmax(prediction, axis=1)
+        # self.classes = np.argmax(prediction, axis=1)
+        self.classes = prediction
 
     def pars_expression(self):
         s = symbol_dict[self.classes[0]]
