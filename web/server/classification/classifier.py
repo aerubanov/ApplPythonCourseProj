@@ -5,8 +5,8 @@ from tensorflow import keras
 import numpy as np
 
 MODEL1_PATH = '/home/cloud/ApplPythonCourseProj/web/server/classification/model34.obj'
-MODEL2_PATH = '/home/cloud/ApplPythonCourseProj/web/server/classification/model34_fit5.obj'
-MODEL3_PATH = '/home/cloud/ApplPythonCourseProj/web/server/classification/model34_fit6.obj'
+MODEL2_PATH = '/home/cloud/ApplPythonCourseProj/web/server/classification/model_34_filt5.obj'
+MODEL3_PATH = '/home/cloud/ApplPythonCourseProj/web/server/classification/model_34_filt6.obj'
 CLASSES_PATH = '/home/cloud/ApplPythonCourseProj/web/server/classification/classes.txt'
 # MODEL_PATH = '/home/anatoly/HDD/Corses/ApplPythonCourseProj/web/server/classification/model.obj'
 # CLASSES_PATH = '/home/anatoly/HDD/Corses/ApplPythonCourseProj/web/server/classification/classes.txt'
@@ -19,9 +19,9 @@ class Model_Assembly():
     def __init__(self):
         with open(MODEL1_PATH, 'rb') as f:
             self.model1 = pickle.load(f)
-        with open('model_34_filt5.obj', 'rb') as f:
+        with open(MODEL2_PATH, 'rb') as f:
             self.model2 = pickle.load(f)
-        with open('model_34_filt6.obj', 'rb') as f:
+        with open(MODEL3_PATH, 'rb') as f:
             self.model3 = pickle.load(f)
 
     def fit(self, X_train, y_train):
