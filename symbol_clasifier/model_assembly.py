@@ -18,6 +18,11 @@ class Model_Assembly():
         with open('model_34_filt6.obj', 'rb') as f:
             self.model3 = pickle.load(f)
 
+    def fit(self, X_train, y_train):
+        self.model1.fit(X_train, y_train)
+        self.model2.fit(X_train, y_train)
+        self.model3.fit(X_train, y_train)
+
     def predict(self, X_test):
         y_1 = self.model1.predict(X_test)
         y_2 = self.model2.predict(X_test)
