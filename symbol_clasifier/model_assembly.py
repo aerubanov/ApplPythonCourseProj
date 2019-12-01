@@ -28,7 +28,7 @@ class Model_Assembly():
             class2 = np.argmax(y_2[row])
             class3 = np.argmax(y_3[row])
             if class1 == class2 or class2 == class3:
-                y_predicted.append(np.argmax(y_2[row]))
+                y_predicted.append(class2)
             else:
                 y_predicted.append(class1)
         return np.array(y_predicted)
