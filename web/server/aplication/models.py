@@ -1,8 +1,9 @@
 from sqlalchemy import Column, Integer, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base
+from aplication import app
 
 Base = declarative_base()
-engine = create_engine('sqlite:///images.db')
+engine = create_engine(app.config['DATABASE'])
 
 
 class Image(Base):
